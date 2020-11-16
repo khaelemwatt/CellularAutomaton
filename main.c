@@ -38,6 +38,10 @@ Grid* createGrid(){
 }
 
 int displayGrid(Grid* pGrid){
+
+    if(grid == NULL)
+        return 1;
+
     for (int i = 0; i < pGrid->rows; i++) {
         for (int j = 0; j < pGrid->cols; j++) {
             printf("%c ", pGrid->grid[i][j]);
