@@ -39,7 +39,7 @@ Grid* createGrid(){
 
 int displayGrid(Grid* pGrid){
 
-    if(grid == NULL)
+    if(pGrid == NULL)
         return 1;
 
     for (int i = 0; i < pGrid->rows; i++) {
