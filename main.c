@@ -1,4 +1,14 @@
-/* First script to be loaded. Will contain the main output of the automaton */
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAXSIZE 20
+
+
+typedef struct grid{
+    char grid[MAXSIZE][MAXSIZE];
+    int rows;
+    int cols;
+}Grid;
 
 int main() {
 
