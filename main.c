@@ -37,7 +37,24 @@ Grid* createGrid(){
     return pGrid;
 }
 
-int main() {
+int displayGrid(Grid* pGrid){
+    for (int i = 0; i < pGrid->rows; i++) {
+        for (int j = 0; j < pGrid->cols; j++) {
+            printf("%c ", pGrid->grid[i][j]);
+        }
+        printf("\n");
+    }
+    return 0;
+}
 
-  return 0;
- }
+int main()
+{
+    Grid* grid = NULL;
+    grid = createGrid();
+
+    displayGrid(grid);
+
+    free(grid);
+
+    return 0;
+}
