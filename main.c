@@ -31,12 +31,36 @@ Grid* createGrid(){
         }
     }
 
-    for(int i=0; i<pGrid->rows; i++){
-        for (int j=0; j<pGrid->cols; j++){
-            pGrid->curGrid[i][j] = '0';
-            pGrid->prevGrid[i][j] = '0';
+    // USER-GENERATED GRID
+    
+   char userRow[pGrid->cols];
+   int elts = (pGrid->rows)*(pGrid->cols);
+   
+   
+       for(int i=0; i<pGrid->rows; i++){
+
+                printf("Enter Row %d : " , i+1 );
+                scanf("%s", userRow);  
+
+                for ( int j=0; j<pGrid->cols; j++){
+                    if (userRow[j] == '1' || userRow[j] == '0'){
+                        continue;
+                    }else{
+                        printf("Row must be a string of 1s and 0s\n");
+                        printf("Enter Row %d : " , i+1 );
+                        scanf("%s", userRow); 
+                    }
+                }
+
+                for (int j=0; j<pGrid->cols; j++){
+                    
+                        pGrid->curGrid[i][j] = userRow[j];
+                        pGrid->prevGrid[i][j] = userRow[j];
+                      
+                
+            }
+
         }
-    }
 
     return pGrid;
 }
@@ -62,29 +86,34 @@ int nextGen(Grid* pGrid){
         }
     }
 
+    //top is the elt in the SAME position in prevGrid
+    //topLeft the elt to the LEFT the same position in prevGrid
+    //topRight the elt to the RIGHT the same position in prevGrid
     char topLeft, top, topRight;
 
     for (int i = 0; i < pGrid->rows; i++) {
         for (int j = 0; j < pGrid->cols; j++) {
-            if(j<1){
+            if(j<1){    // if in the first column (no elts to the LEFT)
 
                 topLeft='0';
                 top=pGrid->prevGrid[i][j];
                 topRight=pGrid->prevGrid[i][j+1];
 
-            }else if(j==pGrid->cols-1){
+            }else if(j==pGrid->cols-1){ // if in the last column (no elts to the RIGHT)
 
                 topLeft=pGrid->prevGrid[i][j-1];
                 top=pGrid->prevGrid[i][j];
                 topRight='0';
 
-            }else{
+            }else{ // middle columns
 
                 topLeft=pGrid->prevGrid[i][j-1];
                 top=pGrid->prevGrid[i][j];
                 topRight=pGrid->prevGrid[i][j+1];
 
             }
+
+            // RULE 30 
 
             if(topLeft=='1' && top=='1' && topRight=='1'){
                 pGrid->curGrid[i][j]='0';
@@ -112,14 +141,18 @@ int nextGen(Grid* pGrid){
 
 int main()
 {
+    
+
     Grid* pGrid = NULL;
     pGrid = createGrid();
 
-    pGrid->curGrid[0][5]='1';
+    int iterations;
+    printf("Generations: ");
+    scanf("%d", &iterations);
 
     displayGrid(pGrid);
 
-    for(int i=0; i<5; i++){
+    for(int i=0; i<iterations; i++){
         nextGen(pGrid);
         displayGrid(pGrid);
     }  
