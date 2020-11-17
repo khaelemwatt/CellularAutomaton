@@ -33,9 +33,7 @@ Grid* createGrid(){
 
     // USER-GENERATED GRID
     
-   char userRow[pGrid->cols];
-   int elts = (pGrid->rows)*(pGrid->cols);
-   
+   char userRow[pGrid->cols];   
    
        for(int i=0; i<pGrid->rows; i++){
 
