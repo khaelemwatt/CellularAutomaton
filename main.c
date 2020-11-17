@@ -93,7 +93,7 @@ int nextGen(Grid* pGrid){
         for (int j = 0; j < pGrid->cols; j++) {
             if(j<1){    // if in the first column (no elts to the LEFT)
 
-                topLeft=pGrid->prevGrid[i][cols-1];
+                topLeft=pGrid->prevGrid[i][pGrid->cols-1];
                 top=pGrid->prevGrid[i][j];
                 topRight=pGrid->prevGrid[i][j+1];
 
