@@ -4,7 +4,8 @@
 #define MAXSIZE 20
 
 typedef struct grid{
-    char grid[MAXSIZE][MAXSIZE];
+    char curGrid[MAXSIZE][MAXSIZE];
+    char prevGrid[MAXSIZE][MAXSIZE];
     int rows;
     int cols;
 }Grid;
