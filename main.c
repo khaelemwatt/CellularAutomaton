@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MAXSIZE 20
 
@@ -32,8 +33,8 @@ Grid* createGrid(){
 
     for(int i=0; i<pGrid->rows; i++){
         for (int j=0; j<pGrid->cols; j++){
-            pGrid->curGrid[i][j] = 'O';
-            pGrid->prevGrid[i][j] = 'O';
+            pGrid->curGrid[i][j] = '0';
+            pGrid->prevGrid[i][j] = '0';
         }
     }
 
@@ -54,14 +55,76 @@ int displayGrid(Grid* pGrid){
     return 0;
 }
 
+int nextGen(Grid* pGrid){
+    for (int i = 0; i < pGrid->rows; i++) {
+        for (int j = 0; j < pGrid->cols; j++) {
+            pGrid->prevGrid[i][j] = pGrid->curGrid[i][j];
+        }
+    }
+
+    char topLeft, top, topRight;
+
+    for (int i = 0; i < pGrid->rows; i++) {
+        for (int j = 0; j < pGrid->cols; j++) {
+            if(j<1){
+
+                topLeft='0';
+                top=pGrid->prevGrid[i][j];
+                topRight=pGrid->prevGrid[i][j+1];
+
+            }else if(j==pGrid->cols-1){
+
+                topLeft=pGrid->prevGrid[i][j-1];
+                top=pGrid->prevGrid[i][j];
+                topRight='0';
+
+            }else{
+
+                topLeft=pGrid->prevGrid[i][j-1];
+                top=pGrid->prevGrid[i][j];
+                topRight=pGrid->prevGrid[i][j+1];
+
+            }
+
+            if(topLeft=='1' && top=='1' && topRight=='1'){
+                pGrid->curGrid[i][j]='0';
+            }else if(topLeft=='1' && top=='1' && topRight=='0'){
+                pGrid->curGrid[i][j]='0';
+            }else if(topLeft=='1' && top=='0' && topRight=='1'){
+                pGrid->curGrid[i][j]='0';
+            }else if(topLeft=='1' && top=='0' && topRight=='0'){
+                pGrid->curGrid[i][j]='1';
+            }else if(topLeft=='0' && top=='1' && topRight=='1'){
+                pGrid->curGrid[i][j]='1';
+            }else if(topLeft=='0' && top=='1' && topRight=='0'){
+                pGrid->curGrid[i][j]='1';
+            }else if(topLeft=='0' && top=='0' && topRight=='1'){
+                pGrid->curGrid[i][j]='1';
+            }else if(topLeft=='0' && top=='0' && topRight=='0'){
+                pGrid->curGrid[i][j]='0';
+            }
+
+        }
+    }
+
+    return 0;
+}
+
 int main()
 {
-    Grid* grid = NULL;
-    grid = createGrid();
+    Grid* pGrid = NULL;
+    pGrid = createGrid();
 
-    displayGrid(grid);
+    pGrid->curGrid[0][5]='1';
 
-    free(grid);
+    displayGrid(pGrid);
+
+    for(int i=0; i<5; i++){
+        nextGen(pGrid);
+        displayGrid(pGrid);
+    }  
+
+    free(pGrid);
 
     return 0;
 }
