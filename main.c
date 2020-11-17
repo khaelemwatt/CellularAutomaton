@@ -3,6 +3,7 @@
 
 #define MAXSIZE 20
 
+
 typedef struct grid{
     char curGrid[MAXSIZE][MAXSIZE];
     char prevGrid[MAXSIZE][MAXSIZE];
@@ -31,7 +32,8 @@ Grid* createGrid(){
 
     for(int i=0; i<pGrid->rows; i++){
         for (int j=0; j<pGrid->cols; j++){
-            pGrid->grid[i][j] = 'O';
+            pGrid->curGrid[i][j] = 'O';
+            pGrid->prevGrid[i][j] = 'O';
         }
     }
 
@@ -45,7 +47,7 @@ int displayGrid(Grid* pGrid){
 
     for (int i = 0; i < pGrid->rows; i++) {
         for (int j = 0; j < pGrid->cols; j++) {
-            printf("%c ", pGrid->grid[i][j]);
+            printf("%c ", pGrid->curGrid[i][j]);
         }
         printf("\n");
     }
