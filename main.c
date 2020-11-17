@@ -24,7 +24,7 @@ Grid* createGrid(){
         if(pGrid->rows<=MAXSIZE && pGrid->cols<=MAXSIZE){
             valid = 1;
         }else{
-            printf("Please enter a gride size under 20x20");
+            printf("Please enter a gride size under 20x20\n");
         }
     }
 
