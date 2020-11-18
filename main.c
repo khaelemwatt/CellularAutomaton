@@ -3,13 +3,6 @@
 #include <string.h>
 #include "header.h"
 
-Grid* createGrid(){
-    Grid* pGrid = NULL;    
-    pGrid = (Grid*)malloc(sizeof(Grid));
-    if (pGrid==NULL)
-        return NULL;
-
-
     int valid = 0;
     while(valid == 0){
         printf("Grid Size (ROW COL): ");
