@@ -1,23 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define MAXSIZE 20
-
-
-typedef struct grid{
-    char curGrid[MAXSIZE][MAXSIZE];
-    char prevGrid[MAXSIZE][MAXSIZE];
-    int rows;
-    int cols;
-}Grid;
-
-Grid* createGrid(){
-    Grid* pGrid = NULL;    
-    pGrid = (Grid*)malloc(sizeof(Grid));
-    if (pGrid==NULL)
-        return NULL;
-
+#include "header.h"
 
     int valid = 0;
     while(valid == 0){
@@ -93,7 +77,7 @@ int nextGen(Grid* pGrid){
         for (int j = 0; j < pGrid->cols; j++) {
             if(j<1){    // if in the first column (no elts to the LEFT)
 
-                topLeft='0';
+                topLeft=pGrid->prevGrid[i][pGrid->cols-1];
                 top=pGrid->prevGrid[i][j];
                 topRight=pGrid->prevGrid[i][j+1];
 
@@ -101,7 +85,7 @@ int nextGen(Grid* pGrid){
 
                 topLeft=pGrid->prevGrid[i][j-1];
                 top=pGrid->prevGrid[i][j];
-                topRight='0';
+                topRight=pGrid->prevGrid[i][0];
 
             }else{ // middle columns
 

@@ -1,2 +1,2 @@
-main: main.c
-		gcc -o main main.c -Wall -Werror -Wextra -pedantic
+main: main.c header.h
+		gcc -o main main.c header.h -Wall -Werror -Wextra -pedantic
