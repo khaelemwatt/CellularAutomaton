@@ -1,23 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define MAXSIZE 20
-
-
-typedef struct grid{
-    char curGrid[MAXSIZE][MAXSIZE];
-    char prevGrid[MAXSIZE][MAXSIZE];
-    int rows;
-    int cols;
-}Grid;
-
-Grid* createGrid(){
-    Grid* pGrid = NULL;    
-    pGrid = (Grid*)malloc(sizeof(Grid));
-    if (pGrid==NULL)
-        return NULL;
-
+#include "header.h"
 
     int valid = 0;
     while(valid == 0){
