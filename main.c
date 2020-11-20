@@ -127,6 +127,56 @@ int nextGen(Grid* pGrid){
     return 0;
 }
 
+int binToDec(int binary){
+    int decimal = 0; 
+    int remainder; 
+    int base = 1;
+    
+    while (binary > 0){
+        remainder = binary % 10;
+        decimal = decimal + remainder * base;
+
+        binary = binary / 10;
+
+        base = base * 2;
+    }
+    printf("Binary Number in Decimal form is: %d \n", decimal);
+
+}
+
+int decToBin(int dec_number){
+    int bin_num = 0;
+    int remainder;
+    int base = 1;
+
+    while (dec_number > 0){
+        remainder = dec_number % 2;
+        dec_number = dec_number / 2;
+
+        bin_num = bin_num + remainder*base;
+        base = base * 10;
+    }
+
+    printf("Decimal Number in Binary form is: %d \n", bin_num);
+}
+
+void binToVar(char *binString){
+    char str[50];
+    char string[50];
+    strcpy(str, binString);
+    int i;
+    int strLength = strlen(str);
+
+    for (i = 0; i < strLength; i++){
+        printf("[%c]", str[i]);
+    }
+    
+    memcpy(string, str, i);
+    string[i] = '\0';
+    printf("\n");
+    printf("%s\n", string);
+}
+
 int main()
 {
     
