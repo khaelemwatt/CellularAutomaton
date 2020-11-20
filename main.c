@@ -8,7 +8,8 @@ Grid* createGrid(){
     pGrid = (Grid*)malloc(sizeof(Grid));
     if (pGrid==NULL)
         return NULL;
-    
+
+
     int valid = 0;
     while(valid == 0){
         printf("Grid Size (ROW COL): ");
@@ -17,7 +18,7 @@ Grid* createGrid(){
         if(pGrid->rows<=MAXSIZE && pGrid->cols<=MAXSIZE){
             valid = 1;
         }else{
-            printf("Please enter a gride size under 20x20\n");
+            printf("ERROR: Maximum gird size is 20x20\n");
         }
     }
 
@@ -25,27 +26,38 @@ Grid* createGrid(){
     
    char userRow[pGrid->cols];   
    
-       for(int i=0; i<pGrid->rows; i++){
+       for(int i=0; i<pGrid->rows; i++){                
 
-                printf("Enter Row %d : " , i+1 );
+            int valid = 0;
+
+            while(valid==0){
+
+                valid = 1;
+
+                printf("Enter Row %d : " , i+1);
                 scanf("%s", userRow);  
+
+                if((int)strlen(userRow)!=pGrid->cols){
+                    printf("Row must contain %d elements\n", pGrid->cols);
+                    valid = 0;
+                }
 
                 for ( int j=0; j<pGrid->cols; j++){
                     if (userRow[j] == '1' || userRow[j] == '0'){
                         continue;
                     }else{
                         printf("Row must be a string of 1s and 0s\n");
-                        printf("Enter Row %d : " , i+1 );
-                        scanf("%s", userRow); 
+                        valid = 0;
+                        break;
                     }
                 }
 
-                for (int j=0; j<pGrid->cols; j++){
-                    
-                        pGrid->curGrid[i][j] = userRow[j];
-                        pGrid->prevGrid[i][j] = userRow[j];
-                      
+            }
+
+            for (int j=0; j<pGrid->cols; j++){
                 
+                    pGrid->curGrid[i][j] = userRow[j];
+                    pGrid->prevGrid[i][j] = userRow[j];
             }
 
         }
