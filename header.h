@@ -23,6 +23,9 @@ Grid* createGrid();
 // Displays the current state of the grid to the user int displayGrid(Grid* pGrid);
 int displayGrid(Grid* pGrid);
 
+//Saves the grid to a file as it would appear on the screen
+int saveGrid(Grid* pGrid, int counter);
+
 // Handles cell population for the game of life
 int populate(Grid* pGrid, char neighbours[8], int row, int col);
 
@@ -42,3 +45,4 @@ int decToBin(int dec_number);
 void binToVar(char *binString);
 
 #endif
+
