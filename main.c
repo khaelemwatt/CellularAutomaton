@@ -139,6 +139,106 @@ int nextGen(Grid* pGrid){
     return 0;
 }
 
+int populate(Grid* pGrid, char neighbours[8], int row, int col){
+    int count=0;
+    for(int i=0; i<8; i++){
+        if(neighbours[i]=='1') 
+            count++;
+    }
+        
+    if(pGrid->prevGrid[row][col]=='1'){
+        if(count<2){
+            pGrid->curGrid[row][col]='0';
+        }else if(count<4){
+            pGrid->curGrid[row][col]='1';
+        }else{
+            pGrid->curGrid[row][col]='0';
+        }
+    }else{
+        if(count==3){
+            pGrid->curGrid[row][col]='1';
+        }
+    }
+    return 0;
+}
+
+int nextGenGameOfLife(Grid* pGrid){
+    for (int i = 0; i < pGrid->rows; i++) {
+        for (int j = 0; j < pGrid->cols; j++) {
+            pGrid->prevGrid[i][j] = pGrid->curGrid[i][j];
+        }
+    }
+
+    int endRow = pGrid->rows-1;
+    int endCol = pGrid->cols-1;
+
+    for (int i = 0; i < pGrid->rows; i++) {
+        for (int j = 0; j < pGrid->cols; j++) {
+
+            if(i<1){    // if in the first row 
+
+                if(j<1){    // if in the first column (no elts to the LEFT)
+
+                    char neighbours[8] = {pGrid->prevGrid[endRow][endCol], pGrid->prevGrid[endRow][j], pGrid->prevGrid[endRow][j+1], pGrid->prevGrid[i][endCol], pGrid->prevGrid[i][j+1], pGrid->prevGrid[i+1][endCol], pGrid->prevGrid[i+1][j], pGrid->prevGrid[i+1][j+1]};                    
+                    populate(pGrid, neighbours, i, j);
+                    
+                }else if(j==pGrid->cols-1){ // if in the last column (no elts to the RIGHT)
+
+                    char neighbours[8] = {pGrid->prevGrid[endRow][j-1], pGrid->prevGrid[endRow][j], pGrid->prevGrid[endRow][0], pGrid->prevGrid[i][j-1], pGrid->prevGrid[i][0], pGrid->prevGrid[i+1][j-1], pGrid->prevGrid[i+1][j], pGrid->prevGrid[i+1][0]};
+                    populate(pGrid, neighbours, i, j);
+
+                }else{ // middle columns
+
+                    char neighbours[8] = {pGrid->prevGrid[endRow][j-1], pGrid->prevGrid[endRow][j], pGrid->prevGrid[endRow][j+1], pGrid->prevGrid[i][j-1], pGrid->prevGrid[i][j+1], pGrid->prevGrid[i+1][j-1], pGrid->prevGrid[i+1][j], pGrid->prevGrid[i+1][j+1]};
+                    populate(pGrid, neighbours, i, j);
+
+                }
+                
+            }else if(i==pGrid->rows-1){ // if in the last row 
+
+                if(j<1){    // if in the first column (no elts to the LEFT)
+
+                    char neighbours[8] = {pGrid->prevGrid[i-1][endCol], pGrid->prevGrid[i-1][j], pGrid->prevGrid[i-1][j+1], pGrid->prevGrid[i][endCol], pGrid->prevGrid[i][j+1], pGrid->prevGrid[0][endCol], pGrid->prevGrid[0][j], pGrid->prevGrid[0][j+1]};
+                    populate(pGrid, neighbours, i, j);
+
+                }else if(j==pGrid->cols-1){ // if in the last column (no elts to the RIGHT)
+
+                    char neighbours[8] = {pGrid->prevGrid[i-1][j-1], pGrid->prevGrid[i-1][j], pGrid->prevGrid[i-1][0], pGrid->prevGrid[i][j-1], pGrid->prevGrid[i][0], pGrid->prevGrid[0][j-1], pGrid->prevGrid[0][j], pGrid->prevGrid[0][0]};
+                    populate(pGrid, neighbours, i, j);
+
+                }else{ // middle columns
+
+                    char neighbours[8] = {pGrid->prevGrid[i-1][j-1], pGrid->prevGrid[i-1][j], pGrid->prevGrid[i-1][j+1], pGrid->prevGrid[i][j-1], pGrid->prevGrid[i][j+1], pGrid->prevGrid[0][j-1], pGrid->prevGrid[0][j], pGrid->prevGrid[0][j+1]};
+                    populate(pGrid, neighbours, i, j);
+                }
+
+            }else{ // middle rows
+
+                if(j<1){    // if in the first column (no elts to the LEFT)
+
+                    char neighbours[8] = {pGrid->prevGrid[i-1][endCol], pGrid->prevGrid[i-1][j], pGrid->prevGrid[i-1][j+1], pGrid->prevGrid[i][endCol], pGrid->prevGrid[i][j+1], pGrid->prevGrid[i+1][endCol], pGrid->prevGrid[i+1][j], pGrid->prevGrid[i+1][j+1]};
+                    populate(pGrid, neighbours, i, j);
+                    
+                }else if(j==pGrid->cols-1){ // if in the last column (no elts to the RIGHT)
+
+                    char neighbours[8] = {pGrid->prevGrid[i-1][j-1], pGrid->prevGrid[i-1][j], pGrid->prevGrid[i-1][0], pGrid->prevGrid[i][j-1], pGrid->prevGrid[i][0], pGrid->prevGrid[i+1][j-1], pGrid->prevGrid[i+1][j], pGrid->prevGrid[i+1][0]};
+                    populate(pGrid, neighbours, i, j);
+
+                }else{ // middle columns
+
+                    char neighbours[8] = {pGrid->prevGrid[i-1][j-1], pGrid->prevGrid[i-1][j], pGrid->prevGrid[i-1][j+1], pGrid->prevGrid[i][j-1], pGrid->prevGrid[i][j+1], pGrid->prevGrid[i+1][j-1], pGrid->prevGrid[i+1][j], pGrid->prevGrid[i+1][j+1]};
+                    populate(pGrid, neighbours, i, j);
+
+                }
+
+            }
+
+        }
+    }
+
+    return 0;
+}
+
 int main()
 {
     
