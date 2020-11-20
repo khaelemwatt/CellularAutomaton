@@ -239,25 +239,83 @@ int nextGenGameOfLife(Grid* pGrid){
     return 0;
 }
 
+int getValidInteger(char textToDisplay[])
+{
+    int input;
+    int valid = 0;
+    
+    printf("%s", textToDisplay);
+    valid = (scanf("%d", &input)==1 && input>0 && input<4) ? 1 : 0;
+
+    while(valid != 1)
+    {
+        while((getchar()) != '\n');
+        printf("Invalid Input\n%s", textToDisplay);
+        valid = (scanf("%d", &input)==1 && input>0&& input<4) ? 1 : 0;
+    }
+
+    return input;
+
+}
+
 int main()
 {
-    
+    int choice=0, end=0;
 
-    Grid* pGrid = NULL;
-    pGrid = createGrid();
+    while(end==0){
+        printf("1. Rule 30\n");
+        printf("2. Conway's Game of Life\n");
+        printf("3. Exit\n");
 
-    int iterations;
-    printf("Generations: ");
-    scanf("%d", &iterations);
+        choice = getValidInteger("Choice: ");
 
-    displayGrid(pGrid);
+        switch(choice){
+            case 1: {
+                Grid* pGrid = NULL;
+                pGrid = createGrid();
 
-    for(int i=0; i<iterations; i++){
-        nextGen(pGrid);
-        displayGrid(pGrid);
-    }  
+                int iterations;
+                printf("Generations: ");
+                scanf("%d", &iterations);
 
-    free(pGrid);
+                displayGrid(pGrid);
+
+                for(int i=0; i<iterations; i++){
+                    nextGen(pGrid);
+                    displayGrid(pGrid);
+                }  
+
+                free(pGrid);
+                end = 1;
+                break;
+            }
+            case 2: {
+                Grid* pGrid = NULL;
+                pGrid = createGrid();
+
+                int iterations;
+                printf("Generations: ");
+                scanf("%d", &iterations);
+
+                printf("----------GENERATION 0----------\n");
+                displayGrid(pGrid);
+
+                for(int i=0; i<iterations; i++){
+                    nextGenGameOfLife(pGrid);
+                    printf("----------GENERATION %d----------\n", i+1);
+                    displayGrid(pGrid);
+                }  
+
+                free(pGrid);
+                end = 1;
+                break;
+            }
+            case 3: {
+                end = 1;
+                break;
+            }
+        }
+    }
 
     return 0;
 }
