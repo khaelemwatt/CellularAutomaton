@@ -78,6 +78,34 @@ int displayGrid(Grid* pGrid){
     return 0;
 }
 
+int saveGrid(Grid* pGrid, int counter){
+
+    if(pGrid == NULL)
+        return 1;
+
+    char c1 = '\n';
+    FILE *fp;
+
+    if( counter ==0){
+        fp = fopen("CA.txt", "w");
+    }else{
+        fp = fopen("CA.txt", "a");
+    }
+    
+
+    if( fp != NULL){
+        for (int i = 0; i < pGrid->rows; i++) {
+            for (int j = 0; j < pGrid->cols; j++) {
+                char c2 = pGrid->curGrid[i][j];
+                fputc(c2, fp);
+            }
+        fputc(c1, fp);
+        }
+        fclose(fp);
+    }
+    return 0;
+}
+
 int nextGen(Grid* pGrid){
     for (int i = 0; i < pGrid->rows; i++) {
         for (int j = 0; j < pGrid->cols; j++) {
@@ -252,7 +280,7 @@ int binToDec(int binary){
         base = base * 2;
     }
     printf("Binary Number in Decimal form is: %d \n", decimal);
-
+    return 0;
 }
 
 int decToBin(int dec_number){
@@ -269,6 +297,7 @@ int decToBin(int dec_number){
     }
 
     printf("Decimal Number in Binary form is: %d \n", bin_num);
+    return 0;
 }
 
 void binToVar(char *binString){
@@ -322,16 +351,18 @@ int main()
             case 1: {
                 Grid* pGrid = NULL;
                 pGrid = createGrid();
-
+                int counter=0;
                 int iterations;
                 printf("Generations: ");
                 scanf("%d", &iterations);
 
                 displayGrid(pGrid);
-
+                saveGrid(pGrid, counter);
                 for(int i=0; i<iterations; i++){
+                    counter++;
                     nextGen(pGrid);
                     displayGrid(pGrid);
+                    saveGrid(pGrid, counter);
                 }  
 
                 free(pGrid);
@@ -341,18 +372,21 @@ int main()
             case 2: {
                 Grid* pGrid = NULL;
                 pGrid = createGrid();
-
+                int counter =0;
                 int iterations;
                 printf("Generations: ");
                 scanf("%d", &iterations);
 
                 printf("----------GENERATION 0----------\n");
                 displayGrid(pGrid);
+                saveGrid(pGrid, counter);
 
                 for(int i=0; i<iterations; i++){
+                    counter ++;
                     nextGenGameOfLife(pGrid);
                     printf("----------GENERATION %d----------\n", i+1);
                     displayGrid(pGrid);
+                    saveGrid(pGrid, counter);
                 }  
 
                 free(pGrid);
