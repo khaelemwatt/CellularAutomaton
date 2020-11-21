@@ -78,6 +78,135 @@ int displayGrid(Grid* pGrid){
     return 0;
 }
 
+//saves the cellular automaton output to a text file
+int saveGrid(Grid* pGrid, int counter){
+
+    if(pGrid == NULL)
+        return 1;
+
+    char c1 = '\n';
+    FILE *fp;
+
+    if( counter ==0){
+        fp = fopen("CA.txt", "w");
+    }else{
+        fp = fopen("CA.txt", "a");
+    }
+    
+
+    if( fp != NULL){
+        for (int i = 0; i < pGrid->rows; i++) {
+            for (int j = 0; j < pGrid->cols; j++) {
+                char c2 = pGrid->curGrid[i][j];
+                fputc(c2, fp);
+            }
+        fputc(c1, fp);
+        }
+        fclose(fp);
+    }else{
+        printf("Error opening file\n");
+        return 1;
+    }
+    return 0;
+}
+
+//counts the nu,ber of lines in a file
+int countRows(char filename[]){
+  
+    int rows =0;
+    char ch;
+
+    FILE *fp;
+    fp = fopen(filename, "r");
+
+    if (fp != NULL){
+        
+        while ((ch = fgetc(fp)) != EOF)
+        {
+            /* Check new line */
+            if (ch == '\n' || ch == '\0')
+                rows++;
+        }
+
+        fclose(fp);
+    }
+    printf("Rows: %d\n", rows );
+    return rows;
+
+}
+
+//count the number of chars in a file
+int countChars(char filename[]){
+    int chars =0;
+    char ch;
+
+    FILE *fp;
+    fp = fopen(filename, "r");
+
+    if (fp != NULL){
+        while ((ch = fgetc(fp)) != EOF)
+        {
+           if (ch != '\n' ){
+                chars++;
+           }
+        }
+        fclose(fp);  
+    }
+    printf("Cols: %d\n", chars );   
+    return chars;
+
+}
+
+//Creates a grid from lines in a text file
+Grid *loadGrid(){
+
+    //get filename
+    char filename[50];
+    printf("Filename: ");
+    scanf("%50s", filename);
+   
+    //create & allocate memory for grid
+    Grid* pGrid = NULL;    
+    pGrid = (Grid*)malloc(sizeof(Grid));
+    if (pGrid==NULL)
+        return NULL;
+
+    //count the rows and columns from the text file given
+    int rows = countRows(filename);
+    int columns = countChars(filename)/rows;
+    
+
+    FILE *fp;
+    fp = fopen(filename, "r");
+
+    if (fp != NULL){
+        
+        
+        char line[MAXSIZE];
+        pGrid->rows = rows;
+        pGrid->cols = columns;
+        int i =0;
+        char userRow[pGrid->cols];
+
+            while (fgets(line, 60, fp) != NULL){
+
+                for (int j=0; j<pGrid->cols; j++){
+                
+                    pGrid->curGrid[i][j] = line[j];
+                    pGrid->prevGrid[i][j] = line[j];
+                }
+            i++;
+            }
+        
+        fclose(fp);
+        
+    }else{
+        printf("File %s not found!\n", filename );
+    }
+    
+    return pGrid;
+}
+
 int nextGen(Grid* pGrid){
     for (int i = 0; i < pGrid->rows; i++) {
         for (int j = 0; j < pGrid->cols; j++) {
@@ -252,7 +381,7 @@ int binToDec(int binary){
         base = base * 2;
     }
     printf("Binary Number in Decimal form is: %d \n", decimal);
-
+    return 0;
 }
 
 int decToBin(int dec_number){
@@ -269,6 +398,7 @@ int decToBin(int dec_number){
     }
 
     printf("Decimal Number in Binary form is: %d \n", bin_num);
+    return 0;
 }
 
 void binToVar(char *binString){
@@ -309,9 +439,18 @@ int getValidInteger(char textToDisplay[])
 
 int main()
 {
-    int choice=0, end=0;
+    
+    int loadChoice=0;
+    printf("\n---CHOOSE INPUT METHOD---\n");
+    printf("1. Load grid from file\n");
+    printf("2. Enter grid manually\n\n");
+    printf("Choice: ");
+    scanf("%d", &loadChoice);
 
+
+    int choice=0, end=0;
     while(end==0){
+        printf("\n------- MAIN MENU -------\n");
         printf("1. Rule 30\n");
         printf("2. Conway's Game of Life\n");
         printf("3. Exit\n");
@@ -321,17 +460,25 @@ int main()
         switch(choice){
             case 1: {
                 Grid* pGrid = NULL;
-                pGrid = createGrid();
 
+                if (loadChoice==1){
+                    pGrid = loadGrid();
+                }else if (loadChoice==2){
+                     pGrid = createGrid();
+                }
+               
+                int counter=0;
                 int iterations;
                 printf("Generations: ");
                 scanf("%d", &iterations);
 
                 displayGrid(pGrid);
-
+                saveGrid(pGrid, counter);
                 for(int i=0; i<iterations; i++){
+                    counter++;
                     nextGen(pGrid);
                     displayGrid(pGrid);
+                    saveGrid(pGrid, counter);
                 }  
 
                 free(pGrid);
@@ -340,19 +487,28 @@ int main()
             }
             case 2: {
                 Grid* pGrid = NULL;
-                pGrid = createGrid();
+                
+                if (loadChoice==1){
+                    pGrid = loadGrid();
+                }else if (loadChoice==2){
+                     pGrid = createGrid();
+                }
 
+                int counter =0;
                 int iterations;
                 printf("Generations: ");
                 scanf("%d", &iterations);
 
                 printf("----------GENERATION 0----------\n");
                 displayGrid(pGrid);
+                saveGrid(pGrid, counter);
 
                 for(int i=0; i<iterations; i++){
+                    counter ++;
                     nextGenGameOfLife(pGrid);
                     printf("----------GENERATION %d----------\n", i+1);
                     displayGrid(pGrid);
+                    saveGrid(pGrid, counter);
                 }  
 
                 free(pGrid);
@@ -368,3 +524,4 @@ int main()
 
     return 0;
 }
+
