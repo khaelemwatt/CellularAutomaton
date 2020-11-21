@@ -26,6 +26,13 @@ int displayGrid(Grid* pGrid);
 //Saves the grid to a file as it would appear on the screen
 int saveGrid(Grid* pGrid, int counter);
 
+//helper functions for the loadGrid function
+int countRows(char filename[]);
+int countChars(char filename[]);
+
+//Creates a grid from lines in a text file
+Grid *loadGrid();
+
 // Handles cell population for the game of life
 int populate(Grid* pGrid, char neighbours[8], int row, int col);
 
@@ -45,4 +52,3 @@ int decToBin(int dec_number);
 void binToVar(char *binString);
 
 #endif
-
