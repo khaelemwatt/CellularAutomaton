@@ -18,7 +18,7 @@ typedef struct grid{
 
 /* Create a new, empty grid, returning a pointer to the newly 
    allocated grid OR a value of NULL in the event of error */
-Grid* createGrid();
+Grid* createGrid(int op);
 
 // Displays the current state of the grid to the user int displayGrid(Grid* pGrid);
 int displayGrid(Grid* pGrid);
@@ -31,19 +31,19 @@ int countRows(char filename[]);
 int countChars(char filename[]);
 
 //Creates a grid from lines in a text file
-Grid *loadGrid();
+Grid *loadGrid(int op);
 
 // Handles cell population for the game of life
-int populate(Grid* pGrid, char neighbours[8], int row, int col);
+int populate(Grid* pGrid, char neighbours[8], int row, int col, char ruleset[2][9]);
 
 // Creates the next grid for the cellular automaton
 int nextGen(Grid* pGrid);
 
 //Creates the next grid for the game of life
-int nextGenGameOfLife(Grid* pGrid);
+int nextGen2d(Grid* pGrid, char ruleset[2][9]);
 
 // Used to validate the users input choice for the menu system
-int getValidInteger(char textToDisplay[]);
+int getValidInteger(char textToDisplay[], int max);
 
 int binToDec(int binary);
 
@@ -51,4 +51,5 @@ int decToBin(int dec_number);
 
 void binToVar(char *binString);
 
+void makeRules(char ruleset[2][9]);
 #endif
