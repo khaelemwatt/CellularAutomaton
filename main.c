@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include "header.h"
 
 Grid* createGrid(int op){
@@ -190,11 +189,13 @@ Grid *loadGrid(int op){
     printf("Filename: ");
     scanf("%50s", filename);
 
-    if(access(filename, F_OK)==-1){
-        printf("File %s does not exist\n", filename);
+    FILE *fp;
+    fp = fopen(filename, "r");
+
+    if(!fp)
         return NULL;
-    }
-   
+    
+    fclose(fp);
     //create & allocate memory for grid
     Grid* pGrid = NULL;    
     pGrid = (Grid*)malloc(sizeof(Grid));
@@ -231,7 +232,6 @@ Grid *loadGrid(int op){
 
     printf("Rows: %d\nCols: %d\n", rows, columns);
 
-    FILE *fp;
     fp = fopen(filename, "r");
 
     if (fp != NULL){
