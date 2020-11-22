@@ -192,9 +192,11 @@ Grid *loadGrid(int op){
     FILE *fp;
     fp = fopen(filename, "r");
 
-    if(!fp)
+    if(!fp){
+        printf("File %s does not exist or you dont have access permissions\n", filename);
         return NULL;
-    
+    }
+
     fclose(fp);
     //create & allocate memory for grid
     Grid* pGrid = NULL;    
