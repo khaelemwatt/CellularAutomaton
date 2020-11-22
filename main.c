@@ -1,26 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "header.h"
 
-Grid* createGrid(){
+Grid* createGrid(int op){
     Grid* pGrid = NULL;    
     pGrid = (Grid*)malloc(sizeof(Grid));
-    if (pGrid==NULL)
+    if (pGrid==NULL){
+        printf("Memory allocation error");
         return NULL;
-
+    }
 
     int valid = 0;
-    while(valid == 0){
-        printf("Grid Size (ROW COL): ");
-        scanf("%d %d", &(pGrid->rows), &(pGrid->cols));
 
-        if(pGrid->rows<=MAXSIZE && pGrid->cols<=MAXSIZE){
-            valid = 1;
-        }else{
-            printf("ERROR: Maximum gird size is 20x20\n");
+    //Checks to see if the integer provided is 1. If it is, this means it is a rule 30 grid
+    //which means we only need one row
+    if(op==1){
+        while(valid == 0){
+            printf("Number of Columns: ");
+            scanf("%d", &(pGrid->cols));
+            pGrid->rows=1;
+
+            if(pGrid->rows<=MAXSIZE && pGrid->cols<=MAXSIZE){
+                valid = 1;
+            }else{
+                printf("ERROR: Maximum column size is 20\n");
+            }
         }
-    }
+    }else{
+        while(valid == 0){
+            printf("Grid Size (ROW COL): ");
+            scanf("%d %d", &(pGrid->rows), &(pGrid->cols));
+
+            if(pGrid->rows<=MAXSIZE && pGrid->cols<=MAXSIZE){
+                valid = 1;
+            }else{
+                printf("ERROR: Maximum grid size is 20x20\n");
+            }
+        }
+    }    
 
     // USER-GENERATED GRID    
    char userRow[pGrid->cols];   
@@ -115,22 +134,29 @@ int countRows(char filename[]){
   
     int rows =0;
     char ch;
+    char last;
 
     FILE *fp;
     fp = fopen(filename, "r");
 
     if (fp != NULL){
+
+        //Add initial line
+        rows++;
         
         while ((ch = fgetc(fp)) != EOF)
         {
             /* Check new line */
             if (ch == '\n' || ch == '\0')
                 rows++;
+            last = ch;
         }
+
+        if(last=='\n')
+            rows--;
 
         fclose(fp);
     }
-    printf("Rows: %d\n", rows );
     return rows;
 
 }
@@ -152,29 +178,58 @@ int countChars(char filename[]){
         }
         fclose(fp);  
     }
-    printf("Cols: %d\n", chars );   
     return chars;
 
 }
 
 //Creates a grid from lines in a text file
-Grid *loadGrid(){
+Grid *loadGrid(int op){
 
     //get filename
     char filename[50];
     printf("Filename: ");
     scanf("%50s", filename);
+
+    if(access(filename, F_OK)==-1){
+        printf("File %s does not exist\n", filename);
+        return NULL;
+    }
    
     //create & allocate memory for grid
     Grid* pGrid = NULL;    
     pGrid = (Grid*)malloc(sizeof(Grid));
-    if (pGrid==NULL)
+    if (pGrid==NULL){
+        printf("Memory allocation error");
         return NULL;
+    }
 
     //count the rows and columns from the text file given
     int rows = countRows(filename);
-    int columns = countChars(filename)/rows;
+    int numChars = countChars(filename);
+    int columns;
+
+    if(rows%numChars!=0){
+        columns = numChars/rows;
+    }else{
+        printf("Invalid file format. Please have equal column size for each row\n");
+        return NULL;
+    }
+
+    if(columns >20){
+        printf("Invalid file format. Max column size is 20\n");
+    }
+
+    if(op==1 && rows>1){
+        printf("Invalid file format. Must be 1 row only\n");
+        return NULL;
+    }
     
+    if(op!=1 && rows<3){
+        printf("Invalid file format. Must be 3 or more rows\n");
+        return NULL;
+    }
+
+    printf("Rows: %d\nCols: %d\n", rows, columns);
 
     FILE *fp;
     fp = fopen(filename, "r");
@@ -186,7 +241,6 @@ Grid *loadGrid(){
         pGrid->rows = rows;
         pGrid->cols = columns;
         int i =0;
-        char userRow[pGrid->cols];
 
             while (fgets(line, 60, fp) != NULL){
 
@@ -267,7 +321,7 @@ int nextGen(Grid* pGrid){
     return 0;
 }
 
-int populate(Grid* pGrid, char neighbours[8], int row, int col){
+int populate(Grid* pGrid, char neighbours[8], int row, int col, char ruleset[2][9]){
     int count=0;
     for(int i=0; i<8; i++){
         if(neighbours[i]=='1') 
@@ -275,22 +329,50 @@ int populate(Grid* pGrid, char neighbours[8], int row, int col){
     }
         
     if(pGrid->prevGrid[row][col]=='1'){
-        if(count<2){
-            pGrid->curGrid[row][col]='0';
-        }else if(count<4){
-            pGrid->curGrid[row][col]='1';
-        }else{
-            pGrid->curGrid[row][col]='0';
+        if(count==0){
+            pGrid->curGrid[row][col]=ruleset[1][0];
+        }else if(count==1){
+            pGrid->curGrid[row][col]=ruleset[1][1];
+        }else if(count==2){
+            pGrid->curGrid[row][col]=ruleset[1][2];
+        }else if(count==3){
+            pGrid->curGrid[row][col]=ruleset[1][3];
+        }else if(count==4){
+            pGrid->curGrid[row][col]=ruleset[1][4];
+        }else if(count==5){
+            pGrid->curGrid[row][col]=ruleset[1][5];
+        }else if(count==6){
+            pGrid->curGrid[row][col]=ruleset[1][6];
+        }else if(count==7){
+            pGrid->curGrid[row][col]=ruleset[1][7];
+        }else if(count==8){
+            pGrid->curGrid[row][col]=ruleset[1][8];
         }
     }else{
-        if(count==3){
-            pGrid->curGrid[row][col]='1';
+        if(count==0){
+            pGrid->curGrid[row][col]=ruleset[0][0];
+        }else if(count==1){
+            pGrid->curGrid[row][col]=ruleset[0][1];
+        }else if(count==2){
+            pGrid->curGrid[row][col]=ruleset[0][2];
+        }else if(count==3){
+            pGrid->curGrid[row][col]=ruleset[0][3];
+        }else if(count==4){
+            pGrid->curGrid[row][col]=ruleset[0][4];
+        }else if(count==5){
+            pGrid->curGrid[row][col]=ruleset[0][5];
+        }else if(count==6){
+            pGrid->curGrid[row][col]=ruleset[0][6];
+        }else if(count==7){
+            pGrid->curGrid[row][col]=ruleset[0][7];
+        }else if(count==8){
+            pGrid->curGrid[row][col]=ruleset[0][8];
         }
     }
     return 0;
 }
 
-int nextGenGameOfLife(Grid* pGrid){
+int nextGen2d(Grid* pGrid, char ruleset[2][9]){
     for (int i = 0; i < pGrid->rows; i++) {
         for (int j = 0; j < pGrid->cols; j++) {
             pGrid->prevGrid[i][j] = pGrid->curGrid[i][j];
@@ -308,17 +390,17 @@ int nextGenGameOfLife(Grid* pGrid){
                 if(j<1){    // if in the first column (no elts to the LEFT)
 
                     char neighbours[8] = {pGrid->prevGrid[endRow][endCol], pGrid->prevGrid[endRow][j], pGrid->prevGrid[endRow][j+1], pGrid->prevGrid[i][endCol], pGrid->prevGrid[i][j+1], pGrid->prevGrid[i+1][endCol], pGrid->prevGrid[i+1][j], pGrid->prevGrid[i+1][j+1]};                    
-                    populate(pGrid, neighbours, i, j);
+                    populate(pGrid, neighbours, i, j, ruleset);
                     
                 }else if(j==pGrid->cols-1){ // if in the last column (no elts to the RIGHT)
 
                     char neighbours[8] = {pGrid->prevGrid[endRow][j-1], pGrid->prevGrid[endRow][j], pGrid->prevGrid[endRow][0], pGrid->prevGrid[i][j-1], pGrid->prevGrid[i][0], pGrid->prevGrid[i+1][j-1], pGrid->prevGrid[i+1][j], pGrid->prevGrid[i+1][0]};
-                    populate(pGrid, neighbours, i, j);
+                    populate(pGrid, neighbours, i, j, ruleset);
 
                 }else{ // middle columns
 
                     char neighbours[8] = {pGrid->prevGrid[endRow][j-1], pGrid->prevGrid[endRow][j], pGrid->prevGrid[endRow][j+1], pGrid->prevGrid[i][j-1], pGrid->prevGrid[i][j+1], pGrid->prevGrid[i+1][j-1], pGrid->prevGrid[i+1][j], pGrid->prevGrid[i+1][j+1]};
-                    populate(pGrid, neighbours, i, j);
+                    populate(pGrid, neighbours, i, j, ruleset);
 
                 }
                 
@@ -327,17 +409,17 @@ int nextGenGameOfLife(Grid* pGrid){
                 if(j<1){    // if in the first column (no elts to the LEFT)
 
                     char neighbours[8] = {pGrid->prevGrid[i-1][endCol], pGrid->prevGrid[i-1][j], pGrid->prevGrid[i-1][j+1], pGrid->prevGrid[i][endCol], pGrid->prevGrid[i][j+1], pGrid->prevGrid[0][endCol], pGrid->prevGrid[0][j], pGrid->prevGrid[0][j+1]};
-                    populate(pGrid, neighbours, i, j);
+                    populate(pGrid, neighbours, i, j, ruleset);
 
                 }else if(j==pGrid->cols-1){ // if in the last column (no elts to the RIGHT)
 
                     char neighbours[8] = {pGrid->prevGrid[i-1][j-1], pGrid->prevGrid[i-1][j], pGrid->prevGrid[i-1][0], pGrid->prevGrid[i][j-1], pGrid->prevGrid[i][0], pGrid->prevGrid[0][j-1], pGrid->prevGrid[0][j], pGrid->prevGrid[0][0]};
-                    populate(pGrid, neighbours, i, j);
+                    populate(pGrid, neighbours, i, j, ruleset);
 
                 }else{ // middle columns
 
                     char neighbours[8] = {pGrid->prevGrid[i-1][j-1], pGrid->prevGrid[i-1][j], pGrid->prevGrid[i-1][j+1], pGrid->prevGrid[i][j-1], pGrid->prevGrid[i][j+1], pGrid->prevGrid[0][j-1], pGrid->prevGrid[0][j], pGrid->prevGrid[0][j+1]};
-                    populate(pGrid, neighbours, i, j);
+                    populate(pGrid, neighbours, i, j, ruleset);
                 }
 
             }else{ // middle rows
@@ -345,17 +427,17 @@ int nextGenGameOfLife(Grid* pGrid){
                 if(j<1){    // if in the first column (no elts to the LEFT)
 
                     char neighbours[8] = {pGrid->prevGrid[i-1][endCol], pGrid->prevGrid[i-1][j], pGrid->prevGrid[i-1][j+1], pGrid->prevGrid[i][endCol], pGrid->prevGrid[i][j+1], pGrid->prevGrid[i+1][endCol], pGrid->prevGrid[i+1][j], pGrid->prevGrid[i+1][j+1]};
-                    populate(pGrid, neighbours, i, j);
+                    populate(pGrid, neighbours, i, j, ruleset);
                     
                 }else if(j==pGrid->cols-1){ // if in the last column (no elts to the RIGHT)
 
                     char neighbours[8] = {pGrid->prevGrid[i-1][j-1], pGrid->prevGrid[i-1][j], pGrid->prevGrid[i-1][0], pGrid->prevGrid[i][j-1], pGrid->prevGrid[i][0], pGrid->prevGrid[i+1][j-1], pGrid->prevGrid[i+1][j], pGrid->prevGrid[i+1][0]};
-                    populate(pGrid, neighbours, i, j);
+                    populate(pGrid, neighbours, i, j, ruleset);
 
                 }else{ // middle columns
 
                     char neighbours[8] = {pGrid->prevGrid[i-1][j-1], pGrid->prevGrid[i-1][j], pGrid->prevGrid[i-1][j+1], pGrid->prevGrid[i][j-1], pGrid->prevGrid[i][j+1], pGrid->prevGrid[i+1][j-1], pGrid->prevGrid[i+1][j], pGrid->prevGrid[i+1][j+1]};
-                    populate(pGrid, neighbours, i, j);
+                    populate(pGrid, neighbours, i, j, ruleset);
 
                 }
 
@@ -418,23 +500,50 @@ void binToVar(char *binString){
     printf("%s\n", string);
 }
 
-int getValidInteger(char textToDisplay[])
+int getValidInteger(char textToDisplay[], int max)
 {
     int input;
     int valid = 0;
     
     printf("%s", textToDisplay);
-    valid = (scanf("%d", &input)==1 && input>0 && input<4) ? 1 : 0;
+    valid = (scanf("%d", &input)==1 && input>0 && input<max+1) ? 1 : 0;
 
     while(valid != 1)
     {
         while((getchar()) != '\n');
         printf("Invalid Input\n%s", textToDisplay);
-        valid = (scanf("%d", &input)==1 && input>0&& input<4) ? 1 : 0;
+        valid = (scanf("%d", &input)==1 && input>0&& input<max+1) ? 1 : 0;
     }
 
     return input;
 
+}
+
+void makeRules(char ruleset[2][9]){
+    char input;
+    int valid;
+
+    for(int j=0; j<2; j++){
+        for(int i=0; i<9; i++){
+
+            valid=0;
+            while((getchar()) != '\n');
+            printf("If there is %d alive neighbours around a %d cell: ", i, j);
+            input = getchar();
+            if(input=='1' || input == '0')
+                valid = 1;
+
+            while(valid !=1){
+                while((getchar()) != '\n');
+                printf("\nIf there is %d alive neighbours around a %d cell: ", i, j);
+                input = getchar();
+                if(input=='1' || input == '0')
+                    valid = 1;
+            }
+
+            ruleset[j][i] = input;
+        }
+    }
 }
 
 int main()
@@ -444,8 +553,7 @@ int main()
     printf("\n---CHOOSE INPUT METHOD---\n");
     printf("1. Load grid from file\n");
     printf("2. Enter grid manually\n\n");
-    printf("Choice: ");
-    scanf("%d", &loadChoice);
+    loadChoice = getValidInteger("Choice: ", 2);
 
 
     int choice=0, end=0;
@@ -453,18 +561,22 @@ int main()
         printf("\n------- MAIN MENU -------\n");
         printf("1. Rule 30\n");
         printf("2. Conway's Game of Life\n");
-        printf("3. Exit\n");
+        printf("3. Custom Rules\n");
+        printf("4. Exit\n");
 
-        choice = getValidInteger("Choice: ");
+        choice = getValidInteger("Choice: ", 3);
 
         switch(choice){
             case 1: {
                 Grid* pGrid = NULL;
 
                 if (loadChoice==1){
-                    pGrid = loadGrid();
+                    while(pGrid==NULL)
+                        pGrid = loadGrid(1);
+                    displayGrid(pGrid);
                 }else if (loadChoice==2){
-                     pGrid = createGrid();
+                    while(pGrid==NULL)
+                        pGrid = createGrid(1);
                 }
                
                 int counter=0;
@@ -489,10 +601,51 @@ int main()
                 Grid* pGrid = NULL;
                 
                 if (loadChoice==1){
-                    pGrid = loadGrid();
+                    while(pGrid==NULL)
+                        pGrid = loadGrid(0);
+                    displayGrid(pGrid);
                 }else if (loadChoice==2){
-                     pGrid = createGrid();
+                    while(pGrid==NULL)
+                        pGrid = createGrid(0);
                 }
+
+                int counter =0;
+                int iterations;
+                printf("Generations: ");
+                scanf("%d", &iterations);
+
+                printf("----------GENERATION 0----------\n");
+                displayGrid(pGrid);
+                saveGrid(pGrid, counter);
+
+                char ruleset[2][9] = {{'0','0','0','1','0','0','0','0','0'}, {'0','0','1','1','0','0','0','0','0'}};
+
+                for(int i=0; i<iterations; i++){
+                    counter ++;
+                    nextGen2d(pGrid, ruleset);
+                    printf("----------GENERATION %d----------\n", i+1);
+                    displayGrid(pGrid);
+                    saveGrid(pGrid, counter);
+                }  
+
+                free(pGrid);
+                end = 1;
+                break;
+            }
+            case 3: {
+                Grid* pGrid = NULL;
+                
+                if (loadChoice==1){
+                    while(pGrid==NULL)
+                        pGrid = loadGrid(0);
+                    displayGrid(pGrid);
+                }else if (loadChoice==2){
+                    while(pGrid==NULL)
+                        pGrid = createGrid(0);
+                }                
+
+                char ruleset[2][9];
+                makeRules(ruleset);
 
                 int counter =0;
                 int iterations;
@@ -505,7 +658,7 @@ int main()
 
                 for(int i=0; i<iterations; i++){
                     counter ++;
-                    nextGenGameOfLife(pGrid);
+                    nextGen2d(pGrid, ruleset);
                     printf("----------GENERATION %d----------\n", i+1);
                     displayGrid(pGrid);
                     saveGrid(pGrid, counter);
@@ -515,8 +668,8 @@ int main()
                 end = 1;
                 break;
             }
-            case 3: {
-                end = 1;
+            case 4:{
+                end=1;
                 break;
             }
         }
